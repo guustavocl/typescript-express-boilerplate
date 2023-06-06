@@ -1,3 +1,3 @@
-# ts-express-boilerplate
+# typescript-express-boilerplate
 
 Not yet complete, I'll update later

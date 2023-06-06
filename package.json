@@ -1,8 +1,8 @@
 {
-  "name": "ts-express-boilerplate",
+  "name": "typescript-express-boilerplate",
   "version": "1.0.0",
   "description": "just a typescript boilerplate to start a express.js api",
-  "repository": "https://github.com/guustavocl/ts-express-boilerplate",
+  "repository": "https://github.com/guustavocl/typescript-express-boilerplate",
   "author": "@guustavocl - https://gus.sh/",
   "license": "MIT",
   "main": "src/index.ts",
