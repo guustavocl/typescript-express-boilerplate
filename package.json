@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "just a typescript boilerplate to start a express.js api",
   "repository": "https://github.com/guustavocl/ts-express-boilerplate",
-  "author": "guustavocl - https://gus.sh/",
+  "author": "@guustavocl - https://gus.sh/",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
