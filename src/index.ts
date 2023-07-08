@@ -1,43 +1,50 @@
+import bodyParser from "body-parser";
+import timeout from "connect-timeout";
+import cookies from "cookie-parser";
 import express from "express";
 import http from "http";
-import cors from "cors";
-import timeout from "connect-timeout";
-import bodyParser from "body-parser";
-import { errorHandler } from "./middleware/errorHandler";
-import { rateLimiter } from "./middleware/rateLimiter";
-import { reqLogger } from "./middleware/requestLogger";
-import { rules } from "./middleware/rules";
+import mongoose from "mongoose";
+import { config } from "./config";
+import { errorHandler } from "./middlewares/errors.middleware";
+import { rateLimiter } from "./middlewares/limiter.middleware";
+import { requestLogger } from "./middlewares/logger.middleware";
+import { rules } from "./middlewares/rules.middleware";
+import { router } from "./routes";
 import logger from "./utils/logger";
-import pingRouteExample from "./routes/ping.routes";
 
-const router = express();
+const app = express();
+
+mongoose
+  .connect(config.mongoose.url, config.mongoose.options)
+  .then(() => {
+    logger.info("Mongoose successfully connected!");
+    runServer();
+  })
+  .catch(error => {
+    logger.error(error, "Mongoose error");
+  });
 
 const runServer = () => {
   /* CONFIGS */
-  router.use(timeout("30s"));
-  router.use(bodyParser.json({ limit: "10mb" }));
-  router.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
-  router.use(cors());
+  app.use(timeout(config.timeout));
+  app.use(bodyParser.json({ limit: config.requestSizeLimit }));
+  app.use(bodyParser.urlencoded({ limit: config.requestSizeLimit, extended: true }));
 
   /* LOGGER */
-  router.use(reqLogger());
+  app.use(requestLogger());
 
-  /* RULES */
-  router.use(rules());
+  /* RULES & COOKIES */
+  app.use(rules());
+  app.use(cookies());
 
-  /* RATE LIMITER */
-  router.use(rateLimiter());
+  /* APLICATION RATE LIMITER */
+  app.use(rateLimiter());
 
-  /*  ROUTES */
-  router.use("/ping", pingRouteExample);
-
-  /*  NOT FOUND */
-  router.get("*", (req, res) => res.status(404).json({ message: "Not Found" }));
+  /*  ROUTES DECLARATION */
+  app.use(router);
 
   /* ERROR HANDLING */
-  router.use(errorHandler());
+  app.use(errorHandler());
 
-  http.createServer(router).listen(3000, () => logger.info(`Server running on port 3000`));
+  http.createServer(app).listen(config.port, () => logger.info(`Server running on port ${config.port}`));
 };
-
-runServer();
