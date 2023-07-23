@@ -9,7 +9,7 @@ export const config = {
   timeout: "30s",
   requestSizeLimit: "10mb",
   mongoose: {
-    url: (production ? process.env.PRODUCTION_MONGO_URL : process.env.DEVELOPMENT_MONGO_URL) || "",
+    url: (production ? process.env.MONGO_PRODUCTION_URL : process.env.MONGO_DEVELOPMENT_URL) || "",
     options: {
       retryWrites: true,
       useNewUrlParser: true,

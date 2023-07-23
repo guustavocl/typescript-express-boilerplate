@@ -5,9 +5,6 @@ export interface UserProps extends Document {
   email: string;
   password: string;
   confirmPassword: string;
-  loginCount: string;
-  lastLoginIP: string;
-  lastLoginDate: Date;
   isEmailConfirmed: boolean;
   isBanned: boolean;
   isAdmin: boolean;

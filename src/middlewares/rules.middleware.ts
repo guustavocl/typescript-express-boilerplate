@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "../config";
 
 export const rules = () => (req: Request, res: Response, next: NextFunction) => {
   // CORS
-  if (process.env.NODE_MODE === "production") {
+  if (config.production) {
     res.header("Access-Control-Allow-Origin", "https://example.com");
   } else {
     res.header("Access-Control-Allow-Origin", "http://127.0.0.1:3000");

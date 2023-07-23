@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import { model, models, Schema, PaginateModel } from "mongoose";
 import bcrypt from "bcryptjs";
 import { UserProps } from "./User.types";
 import mongoosePaginate from "mongoose-paginate-v2";
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     name: {
       type: String,
@@ -70,11 +70,11 @@ UserSchema.path("email").validate(
 
 UserSchema.path("email").validate(
   async (email: string) => {
-    const emailCount = await mongoose.models.User.countDocuments({ email });
+    const emailCount = await models.User.countDocuments({ email });
     return !emailCount;
   },
   "This email is already registered!",
   "DUPLICATED"
 );
 
-export const User = mongoose.model<UserProps, mongoose.PaginateModel<UserProps>>("User", UserSchema);
+export const User = model<UserProps, PaginateModel<UserProps>>("User", UserSchema);
