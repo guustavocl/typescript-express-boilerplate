@@ -1,8 +1,7 @@
 import { AuthValidations } from "../models/Auth/Auth.validations";
 import { AuthService } from "../services/Auth";
-import { UserService } from "../services/User";
 import catchAsync from "../utils/catch";
-import { setCookie } from "../utils/jwt";
+import { removeCookie, setCookie } from "../utils/jwt";
 import { validate } from "../utils/validate";
 
 const login = catchAsync(async (req, res) => {
@@ -13,8 +12,8 @@ const login = catchAsync(async (req, res) => {
 });
 
 const logout = catchAsync(async (req, res) => {
-  const user = await UserService.create(req.body);
-  res.send({ message: "User successfully createad", email: user?.email });
+  removeCookie(res);
+  res.send({ message: "Logout successfull" });
 });
 
 export const AuthController = {

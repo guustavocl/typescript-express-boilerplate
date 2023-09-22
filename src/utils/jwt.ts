@@ -18,6 +18,16 @@ export const setCookie = (user: UserProps, res: Response) => {
   });
 };
 
+export const removeCookie = (res: Response) => {
+  res.cookie(config.authCookie, "", {
+    domain: config.production ?  "example.com" : "127.0.0.1",
+    secure: config.production ? true : false,
+    expires: new Date(1),
+    httpOnly: true,
+    sameSite: "strict",
+  });
+};
+
 export const createToken = (user: UserProps) => {
   return jwt.sign({ _id: user._id }, config.jwtSecret, {
     expiresIn: config.jwtExpiresIn,
