@@ -11,7 +11,7 @@ import { setCookie } from "../utils/jwt";
 
 export const authenticate = (admin = false) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies["express_auth"];
+    const token = req.cookies[config.authCookie];
 
     try {
       const payload = jwt.verify(token, config.jwtSecret);
