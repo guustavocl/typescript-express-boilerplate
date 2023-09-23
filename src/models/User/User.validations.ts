@@ -43,7 +43,7 @@ const findOne = z.object({
 const findAll = z.object({
   query: z.object({
     name: z.string().optional(),
-    sortBy: z.string().optional(),
+    sort: z.string().optional(),
     limit: z
       .string()
       .optional()

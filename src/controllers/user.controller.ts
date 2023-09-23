@@ -23,7 +23,7 @@ const getOne = catchAsync(async (req, res) => {
 const getAll = catchAsync(async (req, res) => {
   const { query } = await validate(UserValidations.findAll, req);
   const filter = pick(query, ["name"]);
-  const options = pick(query, ["sortBy", "limit", "page"]);
+  const options = pick(query, ["sort", "limit", "page"]);
 
   const users = await UserService.findAll(filter, options);
   res.send(users);
