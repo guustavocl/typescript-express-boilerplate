@@ -2,19 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import jwt from "jsonwebtoken";
 
-import { config } from "../config";
 import { UserProps } from "../models/User/User.types";
 import { UserService } from "../services/User";
 import { ApiError } from "../utils/ApiError";
 import catchAsync from "../utils/catch";
 import { setCookie } from "../utils/jwt";
+import { API_CONFIG } from "../config";
 
 export const authenticate = (admin = false) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies[config.authCookie];
+    const token = req.cookies[API_CONFIG.authCookie];
 
     try {
-      const payload = jwt.verify(token, config.jwtSecret);
+      const payload = jwt.verify(token, API_CONFIG.jwtSecret);
       if (!payload) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "Unauthorized");
       }

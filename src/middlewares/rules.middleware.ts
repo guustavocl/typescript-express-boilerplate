@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { config } from "../config";
+import { API_CONFIG } from "../config";
 
 export const rules = () => (req: Request, res: Response, next: NextFunction) => {
   // CORS
-  if (config.production) {
+  if (API_CONFIG.production) {
     res.header("Access-Control-Allow-Origin", "https://example.com");
   } else {
     res.header("Access-Control-Allow-Origin", "http://127.0.0.1:3000");

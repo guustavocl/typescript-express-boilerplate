@@ -3,7 +3,7 @@ import httpStatus from "http-status";
 import { MongooseError } from "mongoose";
 import { ZodError } from "zod";
 
-import { config } from "../config";
+import { API_CONFIG } from "../config";
 import { ApiError } from "../utils/ApiError";
 import logger from "../utils/logger";
 
@@ -26,7 +26,7 @@ export const errorHandler = () => (error: unknown, req: Request, res: Response, 
         ...response,
         code: error.statusCode,
         message: error.message,
-        ...(!config.production && { errors: error.stack }),
+        ...(!API_CONFIG.production && { errors: error.stack }),
       };
     } else if (error instanceof ZodError) {
       response = {

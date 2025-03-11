@@ -1,24 +1,54 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../utils/logger";
 
-const getDurationInMilliseconds = (start: [number, number]) => {
-  const NS_PER_SEC = 1e9;
-  const NS_TO_MS = 1e6;
-  const diff = process.hrtime(start);
+interface RequestMetrics {
+  startTime: [number, number];
+  requestId: string;
+}
 
-  return (diff[0] * NS_PER_SEC + diff[1]) / NS_TO_MS / 1000;
+const getDurationInSeconds = (start: [number, number]) => {
+  const NS_PER_SEC = 1e9;
+  const diff = process.hrtime(start);
+  const seconds = diff[0] + diff[1] / NS_PER_SEC;
+  return seconds.toFixed(4);
 };
 
+// Simple shorter ID generator
+const generateShortId = () => Math.random().toString(36).substring(2, 12);
+
 export const requestLogger = () => (req: Request, res: Response, next: NextFunction) => {
-  const start = process.hrtime();
-  /* RESPONSE LOGGER */
+  const metrics: RequestMetrics = {
+    startTime: process.hrtime(),
+    requestId: req.headers["x-request-id"]?.toString() || generateShortId(),
+  };
+
+  req.headers["x-request-id"] = metrics.requestId;
+
+  logger.http(
+    `→ REQ [${metrics.requestId}] [${req.method}] IP: [${req.socket.remoteAddress}] PATH: [${req.originalUrl}]`
+  );
+
+  // Log response
   res.on("finish", () => {
-    logger.info(
-      `# [${req.method.padEnd(4, " ")} RES ${res.statusCode}] IP: [${
-        req.socket.remoteAddress
-      }] - Duration: [${getDurationInMilliseconds(start).toFixed(6)}s] PATH: [${req.originalUrl}] USER: [${
-        res.locals?.userPayload?._id || "none"
-      }]`
+    const duration = getDurationInSeconds(metrics.startTime);
+    const statusSymbol = res.statusCode >= 400 ? "⚠" : "←";
+
+    logger.http(
+      `${statusSymbol} RES [${metrics.requestId}] [${req.method.padEnd(4, " ")} ${
+        res.statusCode
+      }] [${duration}s] PATH: [${req.originalUrl}] USER: [${res.locals?.userPayload?._id || "none"}]`
+    );
+  });
+
+  // Log if request errors out
+  res.on("error", error => {
+    logger.error(
+      `⚠ ERROR [${metrics.requestId}] [${req.method} IP: [${req.socket.remoteAddress}] PATH: [${req.originalUrl}] ERROR: ${error.message}`,
+      {
+        error: error.message,
+        stack: error.stack,
+        userId: res.locals?.userPayload?._id || "none",
+      }
     );
   });
 
