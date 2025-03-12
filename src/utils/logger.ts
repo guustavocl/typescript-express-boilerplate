@@ -15,6 +15,17 @@ class Logger {
 
     this.logger = winston.createLogger({
       levels: winston.config.syslog.levels,
+      // syslog.levels:
+      // {
+      //   emerg: 0,
+      //   alert: 1,
+      //   crit: 2,
+      //   error: 3,
+      //   warning: 4,
+      //   notice: 5,
+      //   info: 6,
+      //   debug: 7
+      // }
       level: API_CONFIG.production ? "info" : "debug",
       format: winston.format.combine(
         enumerateErrorFormat(),
@@ -85,7 +96,7 @@ class Logger {
   }
 
   http(message: string, ...meta: any[]): Logger {
-    this.logger.http(message, ...meta);
+    this.logger.info(message, ...meta);
     return this;
   }
 
@@ -100,7 +111,7 @@ class Logger {
   }
 
   warn(message: string, ...meta: any[]): Logger {
-    this.logger.warn(message, ...meta);
+    this.logger.warning(message, ...meta);
     return this;
   }
 }
